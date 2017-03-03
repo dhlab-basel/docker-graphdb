@@ -13,7 +13,7 @@ Copy the GraphDB-SE license file into a folder of you choosing and name it ``GRA
 folder into the docker container, so that the license can be used by GraphDB running inside the container.
 
 ```
-$ docker run --rm -it -v /path/to/license/folder:/external -p 3030:3030 dhlabbasel:fuseki
+$ docker run --rm -it -v /path/to/license/folder:/external -p 3030:3030 dhlabbasel/graphdb
 ```
 
 
