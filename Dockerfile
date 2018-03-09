@@ -1,14 +1,29 @@
-FROM dhlabbasel/webapi-base:latest
+FROM ubuntu:16.04
 
 MAINTAINER Ivan Subotic "ivan.subotic@unibas.ch"
 
-# Add GraphDB distribution from the Knora repository
+# Silence debconf messages
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+
+# Install.
 RUN \
+  sed -i 's/# \(.*multiverse$\)/\1/g' /etc/apt/sources.list && \
+  apt-get -qq update && \
+  apt-get -y install \
+    byobu curl git htop man vim wget unzip \
+    openjdk-8-jdk && \
+  rm -rf /var/lib/apt/lists/*
+
+# Set environment variables
+ENV JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64"
+
+RUN \
+  curl -sS -o /tmp/graphdb.zip -L http://maven.ontotext.com/content/groups/all-onto/com/ontotext/graphdb/graphdb-se/8.5.0-RC8/graphdb-se-8.5.0-RC8-dist.zip && \
+  unzip /tmp/graphdb.zip -d /tmp && \
+  mv /tmp/graphdb-se-8.5.0-RC8 /graphdb && \
   git clone -b develop --single-branch --depth=1 https://github.com/dhlab-basel/Knora.git /knora && \
-  unzip /knora/triplestores/graphdb-se/graphdb-se-8.0.3-dist.zip && \
-  mv /graphdb-se-8.0.3 /graphdb && \
   cp /knora/webapi/scripts/KnoraRules.pie /graphdb && \
-  rm -rf /graphdb-se-8.0.3-dist.zip && \
+  rm /tmp/graphdb.zip && \
   rm -rf /knora
 
 WORKDIR /graphdb
